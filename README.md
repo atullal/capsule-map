@@ -32,7 +32,7 @@ requirements.txt               Host image-processing dependencies
 build/                         Generated local artifacts (gitignored)
 ```
 
-See [architecture and data flow](docs/ARCHITECTURE.md).
+See [step-by-step setup and troubleshooting](docs/SETUP.md), [architecture and data flow](docs/ARCHITECTURE.md), [agent instructions](AGENTS.md), and [contributing](CONTRIBUTING.md).
 
 ## Prerequisites
 

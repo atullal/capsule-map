@@ -31,6 +31,20 @@ build/mapping-venv/bin/python tools/triptych/calibrate.py --capture build/new-tr
 
 Project `edge-test.png` from the show directory, photograph using `tools/album/snapshot.py`, inspect it, and record `verification.json` with the photograph's SHA-256 plus the inspection note. The renderer requires that evidence to be present and unchanged.
 
+For example, after fitting `build/new-triptych-show`, use the connected ADB serial:
+
+```sh
+adb -s SERIAL push build/new-triptych-show/edge-test.png /sdcard/Android/data/dev.atul.capsulemap/files/edge-test.png
+adb -s SERIAL shell am start -n dev.atul.capsulemap/.MediaActivity --es file edge-test.png
+build/mapping-venv/bin/python tools/album/snapshot.py --serial SERIAL --output build/new-triptych-show/edge-verification.png
+```
+
+Open that photo and inspect the printed-feature alignment and clipping before recording evidence. The following prompts for your actual observation; it records your judgment, not an automatic alignment assessment:
+
+```sh
+build/mapping-venv/bin/python -c 'import pathlib,json,hashlib,datetime; r=pathlib.Path("build/new-triptych-show"); p=r/"edge-verification.png"; note=input("Observed alignment and limitations: ").strip(); assert note, "Inspection note required"; (r/"verification.json").write_text(json.dumps({"photo_sha256":hashlib.sha256(p.read_bytes()).hexdigest(),"note":note,"at":datetime.datetime.now(datetime.timezone.utc).isoformat()},indent=2))'
+```
+
 ```sh
 build/mapping-venv/bin/python tools/triptych/render.py --run build/new-triptych-show --prepare
 build/mapping-venv/bin/python tools/triptych/render.py --run build/new-triptych-show --sheet
@@ -40,7 +54,7 @@ build/mapping-venv/bin/python tools/triptych/deploy.py --run build/new-triptych-
 
 Deployment checks frame completeness and calibration hashes, encodes and verifies duration, stages the video/report, verifies their device checksums, and starts `three-vinyls.mp4`. The existing phone controller can select it alongside earlier demos. Recalibrate and rerender after moving any sleeve, the projector, focus or keystone.
 
-## Verified current run
+## Historical development run (not included in a clone)
 
 `build/triptych-capture` contains the completed camera sweep; `build/triptych-show` contains the maps, contact sheet, edge check, live photos and deployed video. Unique feature matches: Life & Love 78, Hox 143, Crimson King 51. Held-out projector-space RMS: 2.08, 1.81 and 1.70 pixels respectively. Mask coverage is about 95% including the intentional edge inset; all three physical sleeves are inside the beam.
 
@@ -84,7 +98,7 @@ the projector warp. Timing is currently fixed to the shared 28.8-second,
 calibration. Use `assemble --albums life,hox,crimson` after custom workers finish;
 assembly reads their module locations from manifests. `--source` overrides the
 helper checkout. The current `all` command dispatches built-in modules; coding
-agents are orchestrated by the reusable [skills](../../skills/README.md).
+agents are orchestrated by the reusable [skills](../../skills/vinyl-show-parallel/SKILL.md).
 
 `download_art.py --album ID` lets workers fetch one reference without overwriting
 others. `--manifest SOURCES.json` accepts `{ "id": { "page": "https://...",

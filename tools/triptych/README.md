@@ -6,7 +6,7 @@ A 28.8-second / 48-beat / 100 BPM silent light show at 30 fps, mapped independen
 - Middle: Black Market Brass, **Hox** — adapts four scenes from the supplied project's show: circuit ignition, radar, data rain, spotlights/shockwave finale. Ink-distance fields carry light along the green/violet printed traces.
 - Right: King Crimson, **In the Court of the Crimson King** — new `crimson.py` animation, with separately masked eyes, iris coronas, teeth, cheeks and mouth, travelling facial contours and internal mouth ripples. The print remains stationary; light illuminates its features.
 
-Source animation helpers are imported read-only from `/Users/atullal/Projects/projection-mapping`. No OpenCV process imports pygame. Frames are authored in 1400×1400 artwork coordinates and warped once, then combined with black gaps between sleeves. Each loop starts and ends dark.
+Source animation helpers are imported read-only from `vendor/projection-mapping`. No OpenCV process imports pygame. Frames are authored in 1400×1400 artwork coordinates and warped once, then combined with black gaps between sleeves. Each loop starts and ends dark.
 
 ## Artwork
 

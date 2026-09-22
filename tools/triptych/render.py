@@ -3,10 +3,11 @@ import argparse,pathlib,sys,multiprocessing,json,hashlib
 import cv2,numpy as np
 HERE=pathlib.Path(__file__).resolve().parent
 # Avoid this wrapper's render.py shadowing the source project's render module.
-sys.path.insert(0,'/Users/atullal/Projects/projection-mapping')
+SOURCE=HERE.parents[1]/'vendor/projection-mapping'
+sys.path.insert(0,str(SOURCE))
 import animate as life,animate_hox as hox,animate_hox_show as hoxshow,animkit
 import importlib.util
-spec=importlib.util.spec_from_file_location('source_warp','/Users/atullal/Projects/projection-mapping/render.py');warp_module=importlib.util.module_from_spec(spec);spec.loader.exec_module(warp_module)
+spec=importlib.util.spec_from_file_location('source_warp',SOURCE/'render.py');warp_module=importlib.util.module_from_spec(spec);spec.loader.exec_module(warp_module)
 spec=importlib.util.spec_from_file_location('crimson_animation',HERE/'crimson.py');crimson=importlib.util.module_from_spec(spec);spec.loader.exec_module(crimson)
 p=argparse.ArgumentParser();p.add_argument('--run',type=pathlib.Path,required=True);p.add_argument('--sheet',action='store_true');p.add_argument('--prepare',action='store_true');p.add_argument('--workers',type=int,default=4);a=p.parse_args();RUN=a.run.resolve()
 FPS=30;LOOP=28.8;FRAMES=864

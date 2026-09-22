@@ -2,7 +2,7 @@ import sys,pathlib,json,cv2,numpy as np
 import argparse,hashlib,datetime,uuid
 p=argparse.ArgumentParser(description="Fit a fresh dense sensor map using homography plus cubic residuals.")
 p.add_argument("--run",required=True,type=pathlib.Path)
-p.add_argument("--source",type=pathlib.Path,default=pathlib.Path("/Users/atullal/Projects/projection-mapping"))
+p.add_argument("--source",type=pathlib.Path,default=(pathlib.Path(__file__).resolve().parents[2]/'vendor/projection-mapping'))
 p.add_argument("--reference",required=True,type=pathlib.Path)
 p.add_argument("--roi",help="Optional camera polygon as JSON [[x,y],...]")
 p.add_argument("--legacy-shots",action="store_true",help="Explicitly analyze old captures without a session manifest; never implies current alignment")

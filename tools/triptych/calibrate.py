@@ -3,7 +3,7 @@ import argparse,pathlib,sys,json,hashlib,datetime
 import cv2,numpy as np
 from registration import register
 p=argparse.ArgumentParser();p.add_argument('--capture',type=pathlib.Path,required=True);p.add_argument('--output',type=pathlib.Path,required=True);p.add_argument('--references',type=pathlib.Path,required=True);a=p.parse_args()
-sys.path.insert(0,'/Users/atullal/Projects/projection-mapping');import calibrate,mapping
+sys.path.insert(0,str(pathlib.Path(__file__).resolve().parents[2]/'vendor/projection-mapping'));import calibrate,mapping
 run=a.capture;session=json.loads((run/'session.json').read_text())
 if session['status']!='complete':raise RuntimeError('Capture incomplete')
 for name,sha in session['shots'].items():

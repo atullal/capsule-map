@@ -1,6 +1,6 @@
 # Calibrated album playback on Nebula
 
-This workflow uses the supplied `/Users/atullal/Projects/projection-mapping` project read-only. It reuses its relative-contrast Gray-code decoding, SIFT artwork registration, homography plus cubic residual fitting, ink-aware artwork animation, and single projector-space warp. OpenCV and pygame never share a process. Nebula's internal factory camera replaces the source project's webcam, and Android hardware video playback replaces HDMI/pygame.
+This workflow uses the supplied `vendor/projection-mapping` project read-only. It reuses its relative-contrast Gray-code decoding, SIFT artwork registration, homography plus cubic residual fitting, ink-aware artwork animation, and single projector-space warp. OpenCV and pygame never share a process. Nebula's internal factory camera replaces the source project's webcam, and Android hardware video playback replaces HDMI/pygame.
 
 ## Fresh calibration
 
@@ -47,4 +47,4 @@ Full rendering requires a recorded verification photo that still matches its has
 
 The phone controller lists local MP4s, plays/stops them, and reports playback and attached calibration metrics. Files are in `/sdcard/Android/data/dev.atul.capsulemap/files/`. Direct ADB playback remains available for calibration PNGs. `/state` now reports the active media player rather than only the hidden mesh/effect state.
 
-Room photographs, source artwork, generated media and maps remain in ignored `build/`. The source project is not changed or copied into this repository.
+Room photographs, source artwork, generated media and maps remain in ignored `build/`. Required MIT-licensed helper sources are bundled in `vendor/projection-mapping`; private reference art and captures are excluded.

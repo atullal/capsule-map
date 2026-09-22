@@ -1,48 +1,126 @@
-# Capsule Map prototype
+# Capsule Map
 
-A sideloadable Android TV app for Nebula Capsule 3. The phone controller is a web page served locally by the projector, so an iPhone or Android phone needs no separate installation.
+An Android TV projection-mapping prototype for the **Nebula Capsule 3 (D2425)**, with a local phone/browser controller, internal-sensor calibration capture, and artwork-aware vinyl animations.
 
-## Install and use
+The tested workflow projects structured light, captures the projector's internal camera, fits each sleeve independently, renders light along its printed features, and plays one prewarped video on the projector. Reusable agent skills support separate album workers and parallel rendering.
 
-1. Install `CapsuleMap.apk` onto the projector. With Android developer options and ADB enabled, use `adb install -r CapsuleMap.apk` from a computer connected to the same network or USB. If using wireless ADB, first pair/connect the projector with its displayed address. Alternatively transfer the APK with a trusted file transfer method and open it in a file manager after enabling installation from that source.
-2. Launch **Capsule Map** from Apps. Allow camera permission when prompted. The status on the projector reports Camera2 enumeration and whether the first enumerated camera opened.
-3. Put the phone on the same Wi-Fi and open `http://PROJECTOR_IP:8765` in Safari or Chrome. The projector shows the IP and six-digit PIN. Guest or isolated Wi-Fi may block peer connections.
-4. Enter the PIN, drag the corners to fit a physical flat quadrilateral, choose a prompt, and tap **Project**. Tap the remote center button to toggle mapping guides.
+## What works
 
-The app maps generated 2D animation into a four-corner quadrilateral using a projective transform. It does not scan geometry. A manual mesh endpoint now renders small 3D meshes into the mapped plane; see the manual test below. Prompt matching selects built-in effects; there is no network AI backend or text-to-3D generator. The camera test enumerates Camera2 IDs and attempts to open the first; an opened camera does **not** prove it is the projector calibration camera or that frames can be captured. A zero-camera result proves only that Android's public Camera2 API exposes none to this app. The projector's own auto-keystone can further distort the result; set projector position and keystone first, then calibrate the app.
+- Browser controller with a persistent six-digit PIN, manual quad mapping, built-in effects, small 3D mesh scenes, and local video selection.
+- Internal-camera JPEG capture through the stock Nebula factory app and a small bridge APK. An opaque overlay hides the factory photo preview.
+- Projector-local batch acquisition: 38 native Gray-code patterns, raw photo checksums, timings, and one downloaded archive.
+- Dense surface fitting, held-out error checks, and photographed outline verification.
+- Independent album workers with cached frames, resumable rendering, input fingerprints, and final composition.
+- Demonstrated animations for Skinshape **Life & Love**, Black Market Brass **Hox**, and King Crimson **In the Court of the Crimson King**.
 
-## Build
+The full capture sweep measured **85.4 seconds on-device / 90.6 seconds through laptop import**. Numerical mapping checks and projected outlines were inspected for all three sleeves. See [validation notes](tools/ROBUSTNESS.md).
 
-This project uses only Android platform APIs. Download the Eclipse ECJ 3.38.0 jar from Maven Central into `/tmp/ecj.jar`, or set `ECJ_JAR` to its path, and set `ANDROID_HOME` to your SDK directory. Run `bash build.sh` after installing SDK platform 35 and build-tools 35.0.0. The script compiles with Java 8 compatibility against `platforms/android-35/android.jar`, then package with `aapt2`, `d8`, and `apksigner` from Android SDK build-tools 35.0.0. See `build.sh` for exact commands. Target SDK 28 is intentional for compatibility with older projector firmware and local HTTP; this is a prototype for sideloading, not a Play Store release.
+## Project structure
 
-## Internal camera research (tested on Capsule 3 D2425)
-
-Although Camera2 exposes zero cameras, we verified internal-camera still capture through the stock Nebula factory app, invoked by our companion APK. See [camera access notes and capture helper](tools/camera/README.md). This temporarily shows the factory capture screen; continuous capture alongside our projection is not yet implemented.
-
-## Manual 3D mapping test
-
-The app now accepts a small 3D mesh and camera-derived mapping via `POST /scene`. A rotating cube was projected and verified through the internal sensor and laptop webcam. See [manual workflow, API, and limitations](tools/mapping/README.md). This establishes planar image-based mapping with a 3D rendered scene; AI generation and reconstruction of nonplanar surfaces remain future work.
-
-## Robust playback and calibration workflow
-
-The phone controller now lists staged album videos and can start them or return to effects. `/state` includes actual media status and errors, plus calibration metrics when the video has an attached report. The six-digit PIN persists across app restarts. Videos resume after temporary backgrounding; missing or undecodable media has a retry/return screen. Playback uses the native framebuffer size without reapplying the manual corner warp.
-
-The local HTTP transport limits request bodies to 256 KiB, headers to 16 KiB, and worker/queue counts; it rejects malformed lengths and incomplete bodies with JSON errors. Mapping changes are validated completely and serialized with rendering before they are applied. Crossed/degenerate quadrilaterals are rejected on both mapping endpoints. Controller errors include the server's reason, and guide toggles preserve the current scene mode.
-
-The dense calibration workflow now uses isolated capture sessions, checksummed inputs, coarse surface fitting with cubic re-admission from the supplied projection-mapping project, held-out error checks, and photo-bound visual verification. See [album calibration and deployment](tools/album/README.md). This remains a laptop-driven workflow; it does not yet perform autonomous calibration or AI generation inside the Android app.
-
-Integration checks on the device:
-
-```sh
-python3 tools/robustness_test.py --host PROJECTOR_IP --pin PROJECTOR_PIN
+```text
+AndroidManifest.xml            Main Android application manifest
+build.sh                       Platform-only APK build (no Gradle)
+src/dev/atul/capsulemap/       Controller server, projection, media and capture overlay
+web/controller.html            Browser controller source, embedded during build
+tools/camera/                  Bridge APK, single/batch capture, bundle validation
+tools/album/                   Single-sleeve calibration, verification and deployment
+tools/triptych/                Multi-sleeve registration and parallel animation workers
+tools/mapping/                 Manual mesh and camera-to-projector utilities
+skills/                        Four reusable agent workflows
+vendor/projection-mapping/     Required MIT-licensed calibration/animation helpers
+requirements.txt               Host image-processing dependencies
+build/                         Generated local artifacts (gitignored)
 ```
 
-These checks briefly change the effect prompt and restore the saved mapping. Run while not capturing calibration patterns. Edit the controller in `web/controller.html`; `build.sh` embeds it into the platform-only APK.
+See [architecture and data flow](docs/ARCHITECTURE.md).
 
-## Reusable animation agents and local calibration
+## Prerequisites
 
-Installed skills are maintained in `skills/`: `vinyl-artwork`, `vinyl-animation`, `vinyl-show-parallel`, and `nebula-calibration`. They provide file/command contracts usable by lighter models without depending on a particular provider. Each album agent owns its code/masks/previews; one coordinator owns the projector and final assembly. Their discoverable installations are under `~/.codex/skills/`.
+- An authorized ADB connection to the projector, the stock factory app, and the same local network for the browser controller. Internal sensor access is tested on D2425 firmware; other devices may differ.
+- macOS or Linux host with Python **3.12+**, Java/JDK, `adb`, `ffmpeg`, `ffprobe`, and `zip`. Host locking uses Unix `fcntl`.
+- Android SDK platform **35** and build-tools **35.0.0**.
+- Eclipse ECJ **3.38.0** compiler JAR. Obtain it from [Maven Central](https://repo.maven.apache.org/maven2/org/eclipse/jdt/ecj/3.38.0/ecj-3.38.0.jar).
 
-`tools/triptych/parallel.py` renders independent album layers concurrently, fingerprints inputs, resumes valid frames, and combines completed layers. Preview output cannot be deployed as a full show. See `tools/triptych/README.md` for commands.
+## Build from a fresh clone
 
-`tools/camera/batch.py` starts projector-local structured-light acquisition, then retrieves one verified bundle. A measured 38-photo sweep took 85.4 seconds on-device / 90.6 seconds through local import. The resulting `ai-input.json` and contact sheet give an agent a small entry point to the complete photo set. See `tools/camera/README.md` for prerequisites and limitations.
+```sh
+git clone https://github.com/atullal/capsule-map.git
+cd capsule-map
+python3 -m venv build/mapping-venv
+build/mapping-venv/bin/pip install -r requirements.txt
+
+export ANDROID_HOME=/absolute/path/to/android-sdk
+export ECJ_JAR=/absolute/path/to/ecj-3.38.0.jar
+bash build.sh
+bash tools/camera/build.sh
+```
+
+Outputs are `CapsuleMap.apk` and `build/camera-bridge/CapsuleCameraBridge.apk`. The main build creates a local debug signing key; build the main APK before the bridge. Keep that key locally if you want later APKs to update an existing installation. APKs and keys are not committed.
+
+Target SDK 28 is intentional for this sideloaded prototype; it is not a Play Store release. All required Python helper sources are bundled; another checkout in the author's home directory is not required. Upstream license and snapshot hashes are in `vendor/projection-mapping/`.
+
+## Install and open the controller
+
+Pair wireless ADB using the pairing address/code displayed by the projector, then connect using its separate debugging address. Commands below use that connected serial:
+
+```sh
+adb devices -l
+adb -s SERIAL install -r CapsuleMap.apk
+adb -s SERIAL install -r build/camera-bridge/CapsuleCameraBridge.apk
+adb -s SERIAL shell appops set dev.atul.capsulemap SYSTEM_ALERT_WINDOW allow
+adb -s SERIAL shell am start -n dev.atul.capsulemap/.MainActivity
+```
+
+Open `http://PROJECTOR_IP:8765` on a phone or laptop on the same network and enter the PIN shown by the app. The phone UI is a local web page; no separate phone app is required. Keep this development service on a trusted local network.
+
+## Capture and calibrate
+
+Keep the projector, sleeves, focus, and keystone fixed. Use a new output directory for each capture:
+
+```sh
+build/mapping-venv/bin/python tools/camera/batch.py \
+  --serial SERIAL --run build/new-capture --resume-media EXISTING-STAGED-FILE.mp4
+```
+
+The projector generates patterns and saves all JPEGs locally before transferring one archive. The client verifies it and writes `session.json`, upright `shots/`, `contact-sheet.jpg`, and `ai-input.json`. Choose an actual staged media file to restore; the demo videos must be rendered locally. `--limit 2` is a partial smoke test, not a usable calibration.
+
+Continue with [single-sleeve calibration](tools/album/README.md) or the [three-sleeve workflow](tools/triptych/README.md). Always inspect a photographed projected outline before accepting new geometry. The three-sleeve example contains arrangement-specific camera ROIs that must be updated when objects move.
+
+## Parallel animation and agent skills
+
+After producing and visually verifying a show calibration:
+
+```sh
+build/mapping-venv/bin/python tools/triptych/parallel.py all \
+  --run build/YOUR-VERIFIED-SHOW --workers 3 --preview-frames 6 --width 384
+```
+
+Omit the preview flags for production frames. Workers can also run individually with `worker --album ID`; a coordinator runs `assemble` and deployment. Custom modules provide `setup(calib_dir)` and `frame_light(seconds)`. See [worker commands and contracts](tools/triptych/README.md).
+
+Agent workflows:
+
+- [vinyl-artwork](skills/vinyl-artwork/SKILL.md): match editions, download references, record provenance.
+- [vinyl-animation](skills/vinyl-animation/SKILL.md): feature masks, beat choreography, previews and checks.
+- [vinyl-show-parallel](skills/vinyl-show-parallel/SKILL.md): independent album agents and one device-owning coordinator.
+- [nebula-calibration](skills/nebula-calibration/SKILL.md): capture, AI inspection, fitting and physical verification.
+
+An agent can read these files directly. For local discovery, copy the desired skill directories into your runtime's skill directory. They are model-neutral file/command workflows; no external AI provider or API key is configured by this repository.
+
+## Verification
+
+Offline checks:
+
+```sh
+build/mapping-venv/bin/python tools/camera/test_batch.py
+build/mapping-venv/bin/python -m compileall -q tools vendor/projection-mapping
+```
+
+Device integration tests are documented in [validation notes](tools/ROBUSTNESS.md). They alter projection temporarily; do not run during calibration capture.
+
+## Current limits and repository contents
+
+Camera2 does not expose this projector's sensor. Capture still uses authorized ADB and vendor factory functionality; it is not continuous camera streaming or a phone-facing capture API. Vendor camera contention can return a temporary busy error. Single captures briefly hold the projected frame; batch calibration displays changing patterns. Failed or partial sessions are rejected.
+
+The app displays 3D meshes, but automatic reconstruction of arbitrary nonplanar objects and prompt-to-3D generation are future work. The existing animations map light to observed sleeves, and animation previews alone do not certify physical alignment.
+
+The public repository includes application code, helpers, skills, tests, and documentation. Room photos, rig-specific maps, downloaded copyrighted album artwork, generated videos, APKs, virtual environments, and signing keys are excluded. Download scripts preserve artwork provenance. The bundled upstream helpers retain their [MIT license](vendor/projection-mapping/LICENSE); that notice applies to those sources.

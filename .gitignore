@@ -6,3 +6,10 @@ local.properties
 
 *.apk.idsig
 __pycache__/
+
+.DS_Store
+.venv/
+.env
+.env.*
+*.keystore
+*.jks

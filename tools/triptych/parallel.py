@@ -19,7 +19,7 @@ import cv2
 import numpy as np
 
 HERE = Path(__file__).resolve().parent
-DEFAULT_SOURCE = Path('/Users/atullal/Projects/projection-mapping')
+DEFAULT_SOURCE = HERE.parents[1] / 'vendor/projection-mapping'
 ALBUMS = ('life', 'hox', 'crimson')
 FPS, FRAMES, LOOP = 30, 864, 28.8
 

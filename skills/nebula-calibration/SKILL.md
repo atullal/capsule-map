@@ -29,7 +29,7 @@ For the existing three-sleeve arrangement:
 build/mapping-venv/bin/python tools/triptych/calibrate.py --capture build/NEW-CAPTURE --output build/NEW-SHOW --references build/three-vinyls/reference
 ```
 
-Its camera ROIs describe the original three-sleeve setup; inspect and update them for moved or different objects. For one sleeve use `tools/album/register_dense.py --run build/NEW-CAPTURE --reference ABSOLUTE-ARTWORK` with optional camera-space `--roi`. These scripts use the supplied `/Users/atullal/Projects/projection-mapping` algorithms read-only.
+Its camera ROIs describe the original three-sleeve setup; inspect and update them for moved or different objects. For one sleeve use `tools/album/register_dense.py --run build/NEW-CAPTURE --reference ABSOLUTE-ARTWORK` with optional camera-space `--roi`. These scripts use the supplied `vendor/projection-mapping` algorithms read-only.
 
 Reject bad contrast, missing photos, changed checksums, insufficient feature support, non-finite maps or failed held-out fit gates. Numerical RMS is not proof of optical alignment. Project the resulting `edge-test.png`, take an upright photo with `tools/album/snapshot.py`, inspect printed-feature alignment and clipping, then record verification with the relevant renderer's contract. Read `tools/triptych/README.md` for the three-sleeve contract or `tools/album/README.md` for one sleeve. Do not fabricate a verification note to unblock a render.
 

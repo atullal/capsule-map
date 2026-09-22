@@ -1,0 +1,18 @@
+{
+  "repository": "https://github.com/atullal/projection-mapping",
+  "commit": "98f9410f14766beb5ae55e11cce3251082b57e03",
+  "note": "Snapshot of required helper files from the local working tree; file hashes describe the exact snapshot. Android workflows use tools/ wrappers, not standalone webcam entrypoints.",
+  "sha256": {
+    "calibrate.py": "9a552116564576493f079aac40c5b340e029b207667d5e92d4996a34d09b8056",
+    "mapping.py": "2aba75ff5de8099877b5f7c21a012b39a8051c01d92eaa24f1f2a165f29196d4",
+    "animate.py": "54b9c202d11dfd19d7ebf46187aa139b68492b3939fe37d453e330f77d5a6a03",
+    "animate_hox.py": "6ada9e99076465591b2de3536aa6396ade73d042ff17a00d6ac203b766af088a",
+    "animate_hox_show.py": "5c4751948c3fef19e1e6a2973e8ea4dba756742e0fa7f4dbbc704fa87582d7e2",
+    "animkit.py": "67a3acff62d55acbcc9352b99a22f7bfe21bd4b7ee80a82c0fc3d5cb39f8e952",
+    "render.py": "bdf3376ff88899e787a58188f039f92d74fe5b6a14d063bd35117616e837a0a6",
+    "camera.py": "76a16ddd2a4ed6cf319b9e844025af948e952cd8c895da85968ab0ba17988085",
+    "projector_client.py": "3d6de5f48b70104d47de35b22898082b941c89ba9afd3ad0a90baaa21eedf1f7",
+    "regions.py": "39b1de9e3047a5ae809a079f01f9c0bf2d724bdb87d6cbc618ef88c753122403",
+    "LICENSE": "17d13f81539ca99cedc37516ef7329fbc1c9269a9ac9c6c72934cc568d9bd083"
+  }
+}

@@ -1,7 +1,7 @@
 """Reuse the existing Life & Love artwork-space animation with the Nebula sensor map."""
 import sys,pathlib,os,multiprocessing,cv2,numpy as np
 import argparse,json,hashlib
-p=argparse.ArgumentParser(description=__doc__);p.add_argument("--run",required=True,type=pathlib.Path);p.add_argument("--source",type=pathlib.Path,default=pathlib.Path("/Users/atullal/Projects/projection-mapping"));p.add_argument("--sheet",action="store_true");a=p.parse_args();RUN=a.run.resolve()
+p=argparse.ArgumentParser(description=__doc__);p.add_argument("--run",required=True,type=pathlib.Path);p.add_argument("--source",type=pathlib.Path,default=(pathlib.Path(__file__).resolve().parents[2]/'vendor/projection-mapping'));p.add_argument("--sheet",action="store_true");a=p.parse_args();RUN=a.run.resolve()
 ROOT=pathlib.Path(__file__).resolve().parents[2]
 SOURCE=a.source.resolve()
 sys.path.insert(0,str(SOURCE))

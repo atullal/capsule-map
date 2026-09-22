@@ -4,7 +4,7 @@ import cv2
 ROOT=pathlib.Path(__file__).resolve().parents[2]
 sys.path.insert(0,str(ROOT/'tools/camera'));from sensor import Sensor
 p=argparse.ArgumentParser(description=__doc__)
-p.add_argument('serial');p.add_argument('--source',type=pathlib.Path,default=pathlib.Path('/Users/atullal/Projects/projection-mapping'))
+p.add_argument('serial');p.add_argument('--source',type=pathlib.Path,default=(pathlib.Path(__file__).resolve().parents[2]/'vendor/projection-mapping'))
 p.add_argument('--run',type=pathlib.Path,required=True);p.add_argument('--resume-media',default='life-and-love.mp4')
 p.add_argument('--backend',choices=['projector','host'],default='projector',help='Projector-local batch is the default; host preserves the earlier per-photo path')
 a=p.parse_args();run=a.run.resolve()

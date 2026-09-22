@@ -3,3 +3,6 @@ build/
 *.zip
 .gradle/
 local.properties
+
+*.apk.idsig
+__pycache__/

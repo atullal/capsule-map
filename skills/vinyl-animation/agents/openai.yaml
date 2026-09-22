@@ -1,0 +1,4 @@
+interface:
+  display_name: "Vinyl Animation"
+  short_description: "Create light animations aligned to printed album art"
+  default_prompt: "Use $vinyl-animation to create an artwork-aware animation for the assigned vinyl sleeve."

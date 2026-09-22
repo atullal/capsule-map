@@ -1,0 +1,4 @@
+interface:
+  display_name: "Parallel Vinyl Show"
+  short_description: "Coordinate isolated album agents into one light show"
+  default_prompt: "Use $vinyl-show-parallel to create the album animations in parallel and assemble a verified projector show."

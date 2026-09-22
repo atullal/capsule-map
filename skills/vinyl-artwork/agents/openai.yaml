@@ -1,0 +1,4 @@
+interface:
+  display_name: "Vinyl Artwork"
+  short_description: "Find and verify the exact vinyl cover artwork"
+  default_prompt: "Use $vinyl-artwork to download and verify the matching album covers for this projection show."

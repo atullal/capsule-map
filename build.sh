@@ -1,11 +1,14 @@
 #!/usr/bin/env bash
 set -euo pipefail
+python3 tools/embed_controller.py
 SDK_ROOT="${ANDROID_HOME:-/tmp/android-sdk}"
 BT="$SDK_ROOT/build-tools/35.0.0"
 PLATFORM="$SDK_ROOT/platforms/android-35/android.jar"
 mkdir -p build/classes build/dex
+# Remove stale nested classes left behind by renamed or deleted source types.
+find build/classes build/dex -type f -delete
 # ECJ supports compilation when this runtime has a JRE without javac.
-java -jar "${ECJ_JAR:-/tmp/ecj.jar}" -1.8 -bootclasspath "$PLATFORM" -d build/classes src/dev/atul/capsulemap/MainActivity.java
+java -jar "${ECJ_JAR:-/tmp/ecj.jar}" -1.8 -bootclasspath "$PLATFORM" -d build/classes src/dev/atul/capsulemap/*.java
 "$BT/aapt2" link -o build/base.apk --manifest AndroidManifest.xml -I "$PLATFORM"
 "$BT/d8" --min-api 26 --lib "$PLATFORM" --output build/dex build/classes/dev/atul/capsulemap/*.class
 cp build/base.apk build/CapsuleMap-unsigned.apk
